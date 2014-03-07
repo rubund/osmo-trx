@@ -201,6 +201,7 @@ RadioInterface *makeRadioInterface(struct trx_config *config,
 	case RadioDevice::NORMAL:
 		radio = new RadioInterface(usrp, config->sps, config->chans);
 		break;
+	case RadioDevice::RESAMP_13M:
 	case RadioDevice::RESAMP_64M:
 	case RadioDevice::RESAMP_100M:
 		radio = new RadioInterfaceResamp(usrp,

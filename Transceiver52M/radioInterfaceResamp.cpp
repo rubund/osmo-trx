@@ -28,6 +28,10 @@ extern "C" {
 #include "convert.h"
 }
 
+/* Resampling hack for 13 MHz clocking */
+#define RESAMP_13M_INRATE			50
+#define RESAMP_13M_OUTRATE			150
+
 /* Resampling parameters for 64 MHz clocking */
 #define RESAMP_64M_INRATE			65
 #define RESAMP_64M_OUTRATE			96
@@ -46,7 +50,7 @@ extern "C" {
  *   2 pulse Laurent GMSK approximation gives us below 0.5 degrees
  *   RMS phase error at the resampler output.
  */
-#define RESAMP_TX4_FILTER		0.45
+#define RESAMP_TX4_FILTER		0.15
 
 static Resampler *upsampler = NULL;
 static Resampler *dnsampler = NULL;
@@ -114,6 +118,10 @@ bool RadioInterfaceResamp::init(int type)
 	powerScaling.resize(1);
 
 	switch (type) {
+	case RadioDevice::RESAMP_13M:
+		resamp_inrate = RESAMP_13M_INRATE;
+		resamp_outrate = RESAMP_13M_OUTRATE;
+		break;
 	case RadioDevice::RESAMP_64M:
 		resamp_inrate = RESAMP_64M_INRATE;
 		resamp_outrate = RESAMP_64M_OUTRATE;
@@ -145,7 +153,7 @@ bool RadioInterfaceResamp::init(int type)
 		return false;
 	}
 
-	upsampler = new Resampler(resamp_outrate, resamp_inrate);
+	upsampler = new Resampler(resamp_outrate, resamp_inrate, 32);
 	if (!upsampler->init(cutoff)) {
 		LOG(ALERT) << "Tx resampler failed to initialize";
 		return false;

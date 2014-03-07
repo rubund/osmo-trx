@@ -656,7 +656,7 @@ int uhd_device::open(const std::string &args, bool extref)
 
 	// Set rates
 	double _rx_rate;
-	double _tx_rate = select_rate(dev_type, sps);
+	double _tx_rate = 3.0 * select_rate(dev_type, sps);
 	if (diversity)
 		_rx_rate = select_rate(dev_type, 1, true);
 	else
@@ -697,6 +697,8 @@ int uhd_device::open(const std::string &args, bool extref)
 		return RESAMP_100M;
 	case B200:
 	case B210:
+	case UMTRX:
+		return RESAMP_13M;
 	default:
 		break;
 	}
