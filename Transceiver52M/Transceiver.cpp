@@ -42,6 +42,9 @@ using namespace GSM;
 /* Number of running values use in noise average */
 #define NOISE_CNT			20
 
+BitVector fillerBurst(148);
+bool useFiller = false;
+
 TransceiverState::TransceiverState()
   : mRetrans(false), mNoiseLev(0.0), mNoises(NOISE_CNT)
 {
@@ -69,17 +72,25 @@ TransceiverState::~TransceiverState()
   }
 }
 
-void TransceiverState::init(size_t slot, signalVector *burst, bool fill)
+void TransceiverState::init(size_t slot, bool fill, float scale, int sps)
 {
-  signalVector *filler;
+  signalVector *burst;
 
   for (int i = 0; i < 102; i++) {
-    if (fill)
-      filler = new signalVector(*burst);
-    else
-      filler = new signalVector(burst->size());
+    if (fill) {
+      for (size_t i = 0; i < fillerBurst.size(); i++)
+        fillerBurst[i] = rand() % 2;
 
-    fillerTable[i][slot] = filler;
+      for (size_t i = 0; i < 26; i++)
+        fillerBurst[61 + i] = GSM::gTrainingSequence[7][i];
+
+      burst = modulateBurst(fillerBurst, 8 + (slot % 4 == 0), sps);
+      scaleVector(*burst, scale);
+    } else {
+      burst = new signalVector((148 + 8 + (slot % 4 == 0)) * sps);
+    }
+
+    fillerTable[i][slot] = burst;
   }
 }
 
@@ -123,7 +134,6 @@ Transceiver::~Transceiver()
 bool Transceiver::init(bool filler)
 {
   int d_srcport, d_dstport, c_srcport, c_dstport;
-  signalVector *burst;
 
   if (!mChans) {
     LOG(ALERT) << "No channels assigned";
@@ -163,13 +173,11 @@ bool Transceiver::init(bool filler)
     mTxPriorityQueueServiceLoopThreads[i] = new Thread(32768);
     mRxServiceLoopThreads[i] = new Thread(32768);
 
-    for (size_t n = 0; n < 8; n++) {
-      burst = modulateBurst(gDummyBurst, 8 + (n % 4 == 0), mSPSTx);
-      scaleVector(*burst, txFullScale);
-      mStates[i].init(n, burst, filler && !i);
-      delete burst;
-    }
+    for (size_t n = 0; n < 8; n++)
+      mStates[i].init(n, filler && !i, txFullScale, mSPSTx);
   }
+
+  useFiller = filler;
 
   return true;
 }
@@ -189,6 +197,9 @@ void Transceiver::addRadioVector(size_t chan, BitVector &bits,
     LOG(ALERT) << "Received burst with invalid slot " << wTime.TN();
     return;
   }
+
+  if (useFiller && (chan || wTime.TN()))
+    return;
 
   burst = modulateBurst(bits, 8 + (wTime.TN() % 4 == 0), mSPSTx);
   scaleVector(*burst, txFullScale * pow(10, -RSSI / 10));
