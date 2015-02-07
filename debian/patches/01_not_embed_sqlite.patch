@@ -1,3 +1,6 @@
+Description: Do not embed sqlite3 when building. Use debian
+ version instead.
+Author: Ruben Undheim <ruben.undheim@gmail.com>
 Index: osmotrx/Makefile.am
 ===================================================================
 --- osmotrx.orig/Makefile.am	2015-02-06 23:31:31.316944097 +0100

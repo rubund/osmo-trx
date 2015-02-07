@@ -1,5 +1,5 @@
 Source: osmotrx
-Section: unknown
+Section: utils
 Priority: optional
 Maintainer: Ruben Undheim <ruben.undheim@gmail.com>
 Build-Depends: debhelper (>= 9),
@@ -10,12 +10,19 @@ Build-Depends: debhelper (>= 9),
                libboost-dev,
                libsqlite3-dev
 Standards-Version: 3.9.6
+Vcs-Browser: https://github.com/rubund/osmo-trx/tree/debian2
+Vcs-Git: git://github.com/rubund/osmo-trx.git -b debian2
 Homepage: http://openbsc.osmocom.org/trac/wiki/OsmoTRX
-#Vcs-Git: git://anonscm.debian.org/collab-maint/osmo-trx.git
-#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/osmo-trx.git;a=summary
 
 Package: osmotrx
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Description: SDR transceiver that implements Layer 1 of a GSM BTS
+ OsmoTRX is a software-defined radio transceiver that implements the Layer 1
+ physical layer of a BTS comprising the following 3GPP specifications:
+ .
+ TS 05.01 "Physical layer on the radio path"
+ TS 05.02 "Multiplexing and Multiple Access on the Radio Path"
+ TS 05.04 "Modulation"
+ TS 05.10 "Radio subsystem synchronization"
+ 
