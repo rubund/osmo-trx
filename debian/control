@@ -1,7 +1,8 @@
 Source: osmotrx
 Section: utils
 Priority: optional
-Maintainer: Ruben Undheim <ruben.undheim@gmail.com>
+Maintainer: Debian Science Maintainers <debian-science-maintainers@lists.alioth.debian.org>
+Uploaders: Ruben Undheim <ruben.undheim@gmail.com>
 Build-Depends: debhelper (>= 9),
                dh-autoreconf,
                pkg-config,
@@ -10,8 +11,8 @@ Build-Depends: debhelper (>= 9),
                libboost-dev,
                libsqlite3-dev
 Standards-Version: 3.9.6
-Vcs-Browser: https://github.com/rubund/osmo-trx/tree/debian2
-Vcs-Git: git://github.com/rubund/osmo-trx.git -b debian2
+Vcs-Browser: https://anonscm.debian.org/cgit/debian-science/packages/osmotrx.git
+Vcs-Git: git://anonscm.debian.org/debian-science/packages/osmotrx.git
 Homepage: http://openbsc.osmocom.org/trac/wiki/OsmoTRX
 
 Package: osmotrx
